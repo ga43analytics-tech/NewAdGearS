@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AdventureGear — Products</title>
+<meta name="description" content="Products / Catalog" />
+<style>
+  :root{--bg:#f8fafc;--card:#fff;--accent:#0ea5a6;--text:#0f1724;--muted:#6b7280}
+  body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
+  header{background:#fff;border-bottom:1px solid #eef2f7;padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
+  .container{max-width:1100px;margin:22px auto;padding:0 20px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+  .product{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 8px 22px rgba(12,18,24,.04)}
+  .product img{width:100%;height:160px;object-fit:cover;border-radius:8px}
+  .price{font-weight:800}
+  .checkout-bar{position:fixed;right:18px;bottom:18px;background:#06202a;color:white;padding:12px;border-radius:10px;display:flex;gap:10px;align-items:center}
+  .btn-primary{background:var(--accent);color:#052a2a;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <div><a href="index.html" style="text-decoration:none;color:var(--text);font-weight:700">← Home</a></div>
+  <div><a href="payment.html" id="top-checkout" class="btn-primary">Checkout</a></div>
+</header>
+
+<main class="container">
+  <h1>Products</h1>
+  <p style="color:var(--muted)">Add items to cart and proceed to payment to simulate a conversion.</p>
+
+  <div class="grid" id="productsGrid">
+    <!-- Product cards generated in JS for clarity -->
+  </div>
+</main>
+
+<div id="checkoutBar" class="checkout-bar" style="display:none">
+  <div id="checkoutCount">0 items</div>
+  <a href="payment.html" style="color:white;text-decoration:underline" id="goCheckout">Go to Payment</a>
+</div>
+
+<script>
+/* Shared cart helpers (same KEY as index) */
+(function(){
+  const KEY = 'ag_cart_v2';
+  function readCart(){ try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e){ return []; } }
+  function saveCart(cart){ localStorage.setItem(KEY, JSON.stringify(cart)); }
+  function addToCart(item){
+    const cart = readCart();
+    const found = cart.find(i => String(i.id) === String(item.id));
+    if(found){ found.qty = (found.qty||1) + 1; } else { cart.push(Object.assign({qty:1}, item)); }
+    saveCart(cart);
+    return cart;
+  }
+  function cartCount(){ return readCart().reduce((s,i)=>s+(i.qty||0),0); }
+
+  // product data
+  const PRODUCTS = [
+    {id:1, name:'Ultralight Hammock', price:1699, image:'https://picsum.photos/500/360?random=31'},
+    {id:2, name:'Compact Stove', price:899, image:'https://picsum.photos/500/360?random=32'},
+    {id:3, name:'Inflatable Sleeping Pad', price:2199, image:'https://picsum.photos/500/360?random=33'},
+    {id:4, name:'Trail Backpack 25L', price:2799, image:'https://picsum.photos/500/360?random=34'}
+  ];
+
+  function renderProducts(){
+    const grid = document.getElementById('productsGrid');
+    grid.innerHTML = '';
+    PRODUCTS.forEach(p=>{
+      const card = document.createElement('div');
+      card.className = 'product';
+      card.innerHTML = `
+        <img src="${p.image}" alt="${p.name}">
+        <h3>${p.name}</h3>
+        <div class="price">₹${p.price}</div>
+        <div style="margin-top:10px">
+          <button id="add-prod-${p.id}" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}">Add to cart</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function updateCheckoutBar(){
+    const count = cartCount();
+    const bar = document.getElementById('checkoutBar');
+    if(count > 0){
+      bar.style.display = 'flex';
+      document.getElementById('checkoutCount').textContent = count + ' item(s)';
+    } else {
+      bar.style.display = 'none';
+    }
+  }
+
+  // attach handlers
+  document.addEventListener('DOMContentLoaded', ()=>{
+    renderProducts();
+    updateCheckoutBar();
+
+    document.querySelectorAll('[id^="add-prod-"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = btn.dataset.id;
+        const name = btn.dataset.name;
+        const price = parseInt(btn.dataset.price||0,10);
+        const cart = addToCart({id,name,price});
+        btn.textContent = 'Added ✓';
+        setTimeout(()=> btn.textContent = 'Add to cart', 800);
+
+        // dataLayer push
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: 'add_to_cart', item_id:id, item_name:name, price:price, cart_count: cart.reduce((s,i)=>s+i.qty,0) });
+
+        updateCheckoutBar();
+      });
+    });
+
+    // checkout CTA push
+    const topCheckout = document.getElementById('top-checkout');
+    if(topCheckout) topCheckout.addEventListener('click', ()=> {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({event:'begin_checkout'});
+    });
+  });
+})();
+</script>
+</body>
+</html>
