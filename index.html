@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AdventureGear — Home</title>
+<meta name="description" content="Lightweight gear & accessories for weekend adventures." />
+<link rel="icon" href="data:;base64,iVBORw0K...">
+<style>
+  :root{--bg:#f7fafc;--card:#fff;--accent:#0ea5a6;--text:#0f1724;--muted:#6b7280}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+  header{background:#06202a;color:white;padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:44px;height:44px;background:linear-gradient(135deg,#06b6d4,#0ea5a6);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
+  nav a{color:rgba(255,255,255,.95);margin-left:14px;text-decoration:none;font-weight:600}
+  .container{max-width:1100px;margin:28px auto;padding:0 20px}
+  .hero{display:flex;flex-wrap:wrap;gap:20px;align-items:center}
+  .hero-left{flex:1;min-width:260px}
+  .hero h1{font-size:32px;margin:0 0 8px}
+  .hero p{margin:0 0 18px;color:var(--muted)}
+  .cta{display:inline-block;background:var(--accent);color:#052a2a;padding:12px 16px;border-radius:10px;text-decoration:none;font-weight:700}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:22px}
+  .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 8px 22px rgba(12,18,24,.06)}
+  .product img{width:100%;height:160px;object-fit:cover;border-radius:8px}
+  .product h3{margin:8px 0 6px;font-size:16px}
+  .price{font-weight:800}
+  footer{padding:26px 20px;text-align:center;color:var(--muted);margin-top:40px}
+  @media(max-width:640px){.hero{flex-direction:column}.hero-left{text-align:center}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">AG</div>
+    <div>
+      <div style="font-weight:800">AdventureGear</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.85)">Gear for weekend explorers</div>
+    </div>
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="products.html">Products</a>
+    <a href="payment.html" id="nav-payment">Payment</a>
+  </nav>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <div class="hero-left">
+      <h1>Pack light. Go far.</h1>
+      <p>Curated outdoor essentials for short trips — hammocks, stoves, sleeping pads and more.</p>
+      <a class="cta" href="products.html" id="cta-shop">Shop collection</a>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px">
+        <div class="card"><strong>Fast shipping</strong><div style="color:var(--muted);font-size:13px">2–4 days</div></div>
+        <div class="card"><strong>30-day returns</strong><div style="color:var(--muted);font-size:13px">No questions</div></div>
+        <div class="card"><strong>Secure payments</strong><div style="color:var(--muted);font-size:13px">Trusted gateways</div></div>
+      </div>
+    </div>
+
+    <div style="min-width:280px;max-width:420px">
+      <img src="https://picsum.photos/800/560?random=11" alt="camping" style="width:100%;border-radius:12px;box-shadow:0 12px 30px rgba(12,18,24,.06)">
+    </div>
+  </section>
+
+  <section style="margin-top:28px">
+    <h2>Featured products</h2>
+    <div class="grid" id="featured">
+      <div class="card product">
+        <img src="https://picsum.photos/400/300?random=21" alt="Hammock">
+        <h3>Ultralight Hammock</h3>
+        <div class="price">₹1,699</div>
+        <button id="add-to-cart-1" data-id="1" data-name="Ultralight Hammock" data-price="1699">Add to cart</button>
+      </div>
+
+      <div class="card product">
+        <img src="https://picsum.photos/400/300?random=22" alt="Stove">
+        <h3>Compact Stove</h3>
+        <div class="price">₹899</div>
+        <button id="add-to-cart-2" data-id="2" data-name="Compact Stove" data-price="899">Add to cart</button>
+      </div>
+
+      <div class="card product">
+        <img src="https://picsum.photos/400/300?random=23" alt="Sleeping Pad">
+        <h3>Inflatable Sleeping Pad</h3>
+        <div class="price">₹2,199</div>
+        <button id="add-to-cart-3" data-id="3" data-name="Sleeping Pad" data-price="2199">Add to cart</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  © AdventureGear — Demo site for testing GTM / GA4 / Ads conversions
+</footer>
+
+<!-- Shared cart & dataLayer helper (works across pages) -->
+<script>
+/* CART UTIL — works on all pages that include this script */
+(function(){
+  const KEY = 'ag_cart_v2';
+
+  function readCart(){ try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e){ return []; } }
+  function saveCart(cart){ localStorage.setItem(KEY, JSON.stringify(cart)); }
+  function addToCart(item){
+    const cart = readCart();
+    const existing = cart.find(i => String(i.id) === String(item.id));
+    if(existing){ existing.qty = (existing.qty || 1) + 1; }
+    else { cart.push(Object.assign({qty:1}, item)); }
+    saveCart(cart);
+    return cart;
+  }
+  function cartCount(){ return readCart().reduce((s,i)=>s + (i.qty||0), 0); }
+
+  // expose helpers to window for other pages if needed
+  window.AGCart = { readCart, saveCart, addToCart, cartCount };
+
+  // attach buttons on this page
+  document.addEventListener('DOMContentLoaded', ()=> {
+    document.querySelectorAll('button[id^="add-to-cart"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = btn.dataset.id;
+        const name = btn.dataset.name;
+        const price = parseInt(btn.dataset.price || 0, 10);
+        const cart = addToCart({id, name, price});
+        btn.textContent = 'Added ✓';
+        setTimeout(()=> btn.textContent = 'Add to cart', 900);
+
+        // push to dataLayer
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event:'add_to_cart', item_id:id, item_name:name, price:price, cart_count: cart.reduce((s,i)=>s+i.qty,0) });
+      });
+    });
+
+    // CTA push
+    const shopBtn = document.getElementById('cta-shop');
+    if(shopBtn) shopBtn.addEventListener('click', ()=> {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: 'click_shop_now' });
+    });
+  });
+})();
+</script>
+</body>
+</html>
