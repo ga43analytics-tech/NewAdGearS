@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Thank you — AdventureGear</title>
+<meta name="description" content="Order confirmation (simulated)." />
+<style>
+  body{margin:0;font-family:Inter,Arial,sans-serif;background:linear-gradient(180deg,#f0fdf4,#ecfdf5);color:#06403a}
+  .container{max-width:760px;margin:80px auto;padding:20px;text-align:center}
+  .card{background:white;padding:28px;border-radius:14px;box-shadow:0 18px 40px rgba(2,6,23,.06)}
+  .btn{display:inline-block;margin-top:16px;padding:10px 14px;background:#0ea5a6;color:#052a2a;border-radius:10px;text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <h1>Thank you! 🎉</h1>
+    <p>Your order has been received (simulated). This page is the conversion page.</p>
+    <a class="btn" href="index.html" id="backHome">Back to Home</a>
+  </div>
+</div>
+
+<script>
+  // fire an additional dataLayer event for conversions if needed
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: 'conversion_thankyou', timestamp: new Date().toISOString() });
+
+  // optional: clear cart in case it wasn't cleared
+  try { localStorage.removeItem('ag_cart_v2'); } catch(e){/*ignore*/ }
+</script>
+</body>
+</html>
